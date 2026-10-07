@@ -10,3 +10,6 @@ export const todos = sqliteTable('todos', {
     .default(sql`(strftime('%s','now'))`),
   updatedAt: integer({ mode: 'timestamp' })
 })
+
+export type SelectTodo = typeof todos.$inferSelect
+export type InsertTodo = typeof todos.$inferInsert
