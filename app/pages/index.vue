@@ -1,5 +1,19 @@
 <script setup lang="ts">
+import type { SelectTodo } from 'hub:db:schema'
+
 const { data: todos, error, status } = useFetch('/api/todos')
+
+const updateTodo = async (todo: SelectTodo) => {
+  const result = await $fetch(`/api/todos/${todo.id}`, {
+    method: 'post',
+    body: { completed: !todo.completed }
+  })
+
+  if (result) {
+    todos.value
+      = todos.value?.map(t => (t.id === result.id ? result : t)) ?? []
+  }
+}
 </script>
 
 <template>
@@ -22,7 +36,11 @@ const { data: todos, error, status } = useFetch('/api/todos')
               <p :class="todo.completed && 'line-through'">
                 {{ todo.description }}
               </p>
-              <UButton :color="todo.completed ? 'secondary' : 'success'">
+              <UButton
+                loading-auto
+                :color="todo.completed ? 'secondary' : 'success'"
+                @click="() => updateTodo(todo)"
+              >
                 {{ todo.completed ? "Undo" : "Complete" }}
               </UButton>
             </div>
