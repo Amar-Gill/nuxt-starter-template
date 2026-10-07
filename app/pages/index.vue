@@ -12,12 +12,21 @@ const { data: todos, error, status } = useFetch('/api/todos')
     </template>
     <template v-else>
       <p>todos</p>
-      <ul>
+      <ul class="space-y-4">
         <li
           v-for="todo in todos"
           :key="todo.id"
         >
-          {{ todo.description }}
+          <UCard>
+            <div class="flex justify-between">
+              <p :class="todo.completed && 'line-through'">
+                {{ todo.description }}
+              </p>
+              <UButton :color="todo.completed ? 'secondary' : 'success'">
+                {{ todo.completed ? "Undo" : "Complete" }}
+              </UButton>
+            </div>
+          </UCard>
         </li>
       </ul>
     </template>
