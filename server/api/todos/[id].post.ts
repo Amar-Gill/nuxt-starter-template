@@ -5,8 +5,6 @@ export default eventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
   const body = await readBody(event)
 
-  console.log({ body })
-
   return db
     .update(schema.todos)
     .set({ completed: body.completed, updatedAt: new Date() })
