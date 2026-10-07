@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SelectTodo } from 'hub:db:schema'
 
-const { data: todos, error, status } = useFetch('/api/todos')
+const { data: todos, error, status, refresh } = useFetch('/api/todos')
 
 const updateTodo = async (todo: SelectTodo) => {
   const result = await $fetch(`/api/todos/${todo.id}`, {
@@ -11,21 +11,52 @@ const updateTodo = async (todo: SelectTodo) => {
 
   if (result) {
     todos.value
-      = todos.value?.map(t => (t.id === result.id ? result : t)) ?? []
+      = todos.value?.map(t => (t.id === result.id ? result : t)) ?? [] // reset array because fetched todos are a shallow ref by default
+  }
+}
+
+const state = reactive({
+  description: ''
+})
+
+const addTodo = async () => {
+  const result = await $fetch('/api/todos', {
+    method: 'post',
+    body: { description: state.description }
+  })
+
+  if (result) {
+    state.description = ''
+    await refresh()
   }
 }
 </script>
 
 <template>
-  <UContainer>
+  <UContainer class="space-y-4 pt-4">
+    <UCard title="Add Todo">
+      <UForm @submit="addTodo">
+        <UFormField
+          label="Desription"
+          name="description"
+        >
+          <UInput v-model="state.description" />
+        </UFormField>
+        <UButton type="submit">
+          Submit
+        </UButton>
+      </UForm>
+    </UCard>
+
     <template v-if="status === 'pending'">
       <p>Loading todos...</p>
     </template>
+
     <template v-else-if="error">
       <p>Error fetching todos</p>
     </template>
+
     <template v-else>
-      <p>todos</p>
       <ul class="space-y-4">
         <li
           v-for="todo in todos"
