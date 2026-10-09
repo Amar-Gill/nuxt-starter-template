@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { SelectTodo } from 'hub:db:schema'
+import type { FormSubmitEvent } from '@nuxt/ui'
+import { addTodoSchema, type AddTodoPayload } from '#shared/schemas/todo'
 
 const { data: todos, error, status, refresh } = useFetch('/api/todos')
 
@@ -19,10 +21,10 @@ const state = reactive({
   description: ''
 })
 
-const addTodo = async () => {
+const addTodo = async (event: FormSubmitEvent<AddTodoPayload>) => {
   const result = await $fetch('/api/todos', {
     method: 'post',
-    body: { description: state.description }
+    body: event.data
   })
 
   if (result) {
@@ -35,7 +37,11 @@ const addTodo = async () => {
 <template>
   <UContainer class="space-y-4 pt-4">
     <UCard title="Add Todo">
-      <UForm @submit="addTodo">
+      <UForm
+        :schema="addTodoSchema"
+        :state="state"
+        @submit="addTodo"
+      >
         <UFormField
           label="Desription"
           name="description"
