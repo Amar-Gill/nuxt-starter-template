@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SelectTodo } from 'hub:db:schema'
+import type { InsertTodo, SelectTodo } from 'hub:db:schema'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { addTodoSchema, type AddTodoPayload } from '#shared/schemas/todo'
 
@@ -17,7 +17,7 @@ const updateTodo = async (todo: SelectTodo) => {
   }
 }
 
-const state = reactive({
+const state = reactive<InsertTodo>({
   description: ''
 })
 
